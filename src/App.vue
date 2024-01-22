@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useReports } from '@/services/reports';
 
 const reports = ref<any[]>([]);
-fetch('https://qeatxociynewegtsajve.supabase.co/functions/v1/fetch-reports').then((res) => {
-  res.json().then((data) => {
-    reports.value = data;
-  });
+
+onMounted(async () => {
+  console.log('mounted');
+  reports.value = await useReports().getReports();
 });
 </script>
 
@@ -20,7 +21,7 @@ fetch('https://qeatxociynewegtsajve.supabase.co/functions/v1/fetch-reports').the
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in reports" :key="item.id">
+      <tr v-for="item in reports" :key="item.timestamp">
         <td>{{ new Date(item.timestamp).toLocaleString() }}</td>
         <td>{{ item.surfline.key }}</td>
         <td>{{ item.allosurf?.s_wht || '' }}</td>
