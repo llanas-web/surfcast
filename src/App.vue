@@ -1,20 +1,32 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref } from 'vue';
+
+const reports = ref<any[]>([]);
+fetch('https://qeatxociynewegtsajve.supabase.co/functions/v1/fetch-reports').then((res) => {
+  res.json().then((data) => {
+    reports.value = data;
+  });
+});
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <h1>Surfcast</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>date</th>
+        <th>surfline</th>
+        <th>allosurf</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in reports" :key="item.id">
+        <td>{{ new Date(item.timestamp).toLocaleString() }}</td>
+        <td>{{ item.surfline.key }}</td>
+        <td>{{ item.allosurf?.s_wht || '' }}</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <style scoped>
