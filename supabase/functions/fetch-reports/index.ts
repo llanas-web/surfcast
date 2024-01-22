@@ -1,5 +1,6 @@
 // deno-lint-ignore-file
 import dayjs from "https://deno.land/x/deno_dayjs@v0.5.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,7 +32,12 @@ const fetchAllosurf = async () => {
 const fetchSurfline = async () => {
   const surflineUrl = Deno.env.get("URL_SURFLINE");
   if (!surflineUrl) throw new Error("Missing URL_SURFLINE env variable");
-  const fetchSurflineResponse = await fetch(surflineUrl);
+  const fetchSurflineResponse = await fetch(surflineUrl, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)",
+    },
+  });
   const mapResponse = new Map<number, any>();
   const json = await fetchSurflineResponse.json();
   for (let i = 0; i < json.data.rating.length; i++) {
@@ -42,8 +48,20 @@ const fetchSurfline = async () => {
   return mapResponse;
 };
 
+const upsertDatabase = async (data: any[]) => {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl) throw new Error("Missing SUPABASE_URL env variable");
+  if (!supabaseKey) throw new Error("Missing SUPABASE_KEY env variable");
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const { data: reports, error } = await supabase
+    .from("reports")
+    .upsert(data, { onConflict: "timestamp" });
+  if (error) throw error;
+  return reports;
+};
+
 Deno.serve(async (req) => {
-  console.log(req.method);
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -60,6 +78,11 @@ Deno.serve(async (req) => {
         surfline: value,
       });
     }
+    if (
+      Array.from(new Set(responseArray.map((item) => item.timestamp)))
+        .length !== responseArray.length
+    ) throw new Error("Duplicate timestamp");
+    await upsertDatabase(responseArray);
     return new Response(JSON.stringify(responseArray), {
       status: 200,
       headers: {
@@ -68,7 +91,7 @@ Deno.serve(async (req) => {
       },
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "content-type": "application/json" },
