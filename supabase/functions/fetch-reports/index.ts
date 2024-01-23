@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-console.log(`Function "browser-with-cors" up and running!`);
+console.log(`§Let's go Surfing!`);
 
 const fetchAllosurf = async () => {
   const allosurfUrl = Deno.env.get("URL_ALLOSURF");
@@ -61,8 +61,30 @@ const upsertDatabase = async (data: any[]) => {
   return reports;
 };
 
-const isSurfable = (rating: number, swell: number) => {
-  return rating >= 2 && swell >= 0.5;
+const isSurfable = (
+  surfline: { value: string },
+  allosurf: { s_wht: string },
+) => {
+  return !!surfline?.value && Number(surfline.value) >= 2 &&
+    !!allosurf?.s_wht && Number(allosurf.s_wht) >= 0.5;
+};
+
+const sendEmail = async () => {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendApiKey) throw new Error("Missing RESEND_API_KEY env variable");
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Deno.env.get("RESEND_API_KEY")}`,
+    },
+    body: JSON.stringify({
+      from: "surfcast.llanas.dev <onboarding@resend.dev>",
+      to: ["b.maurence@gmail.com"],
+      subject: "Surf conditions REPORTS",
+      html: "<strong>Let's go Surfing!</strong>",
+    }),
+  });
 };
 
 Deno.serve(async (req) => {
@@ -76,9 +98,13 @@ Deno.serve(async (req) => {
     const responseArray: any[] = [];
     for (const [key, value] of surflineResponse) {
       const alloSurfValue = alloSurfResponse.get(key);
+      const _isSurfable = isSurfable(value, alloSurfValue);
+      if (_isSurfable) {
+        await sendEmail();
+      }
       responseArray.push({
         timestamp: key,
-        is_surfable: isSurfable(value.value, alloSurfValue["s_wht"]),
+        is_surfable: _isSurfable,
         allosurf: alloSurfResponse.get(key),
         surfline: value,
       });
