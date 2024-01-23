@@ -1,0 +1,1 @@
+alter table "public"."reports" add column "is_surfable" boolean not null default false;

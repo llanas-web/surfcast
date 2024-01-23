@@ -61,6 +61,10 @@ const upsertDatabase = async (data: any[]) => {
   return reports;
 };
 
+const isSurfable = (rating: number, swell: number) => {
+  return rating >= 2 && swell >= 0.5;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -71,9 +75,10 @@ Deno.serve(async (req) => {
     const surflineResponse = await fetchSurfline();
     const responseArray: any[] = [];
     for (const [key, value] of surflineResponse) {
-      // @ts-ignore
+      const alloSurfValue = alloSurfResponse.get(key);
       responseArray.push({
         timestamp: key,
+        is_surfable: isSurfable(value.value, alloSurfValue["s_wht"]),
         allosurf: alloSurfResponse.get(key),
         surfline: value,
       });

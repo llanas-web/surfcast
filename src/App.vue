@@ -18,10 +18,11 @@ onMounted(async () => {
         <th>date</th>
         <th>surfline</th>
         <th>allosurf</th>
+        <th>isSurfable</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in reports" :key="item.timestamp">
+      <tr v-for="item in reports.sort((a, b) => a.timestamp - b.timestamp)" :key="item.timestamp">
         <td>{{ new Date(item.timestamp).toLocaleString() }}</td>
         <td>{{ item.surfline.key }}</td>
         <td>{{ item.allosurf?.s_wht || '' }}</td>
