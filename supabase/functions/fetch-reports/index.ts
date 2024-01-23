@@ -69,9 +69,10 @@ const isSurfable = (
     !!allosurf?.s_wht && Number(allosurf.s_wht) >= 0.5;
 };
 
-const sendEmail = async () => {
+const sendEmail = async (timestamp: number) => {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   if (!resendApiKey) throw new Error("Missing RESEND_API_KEY env variable");
+
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -82,9 +83,38 @@ const sendEmail = async () => {
       from: "surfcast.llanas.dev <onboarding@resend.dev>",
       to: ["b.maurence@gmail.com"],
       subject: "Surf conditions REPORTS",
-      html: "<strong>Let's go Surfing!</strong>",
+      html: `Il y a des vagues prévu le <strong>${
+        dayjs(timestamp).format("DD/MM/YYYY h")
+      }</strong><br/> Let's go surfing!`,
     }),
   });
+};
+
+const sendSms = async (timestamp: number) => {
+  const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
+  const authToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+  const messageServiceId = Deno.env.get("TWILIO_MESSAGE_SERVICE_ID");
+  if (!accountSid) throw new Error("Missing TWILIO_ACCOUNT_SID env variable");
+  if (!authToken) throw new Error("Missing TWILIO_AUTH_TOKEN env variable");
+  if (!messageServiceId) {
+    throw new Error("Missing TWILIO_MESSAGE_SERVICE_ID env variable");
+  }
+  fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${btoa(`${accountSid}:${authToken}`)}`,
+      },
+      body: new URLSearchParams({
+        "To": "+33626356980",
+        "MessagingServiceSid": messageServiceId,
+        "Body": `Il y a des vagues prévu le ${
+          dayjs(timestamp).format("DD/MM/YYYY h")
+        }. Let's go surfing!`,
+      }),
+    },
+  );
 };
 
 Deno.serve(async (req) => {
@@ -100,7 +130,8 @@ Deno.serve(async (req) => {
       const alloSurfValue = alloSurfResponse.get(key);
       const _isSurfable = isSurfable(value, alloSurfValue);
       if (_isSurfable) {
-        await sendEmail();
+        await sendEmail(key);
+        await sendSms(key);
       }
       responseArray.push({
         timestamp: key,
