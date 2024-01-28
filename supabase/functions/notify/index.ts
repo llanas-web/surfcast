@@ -2,6 +2,7 @@
 
 import dayjs from "https://deno.land/x/deno_dayjs@v0.5.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { Response } from "https://esm.sh/v135/@supabase/node-fetch@2.6.15/denonext/node-fetch.mjs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

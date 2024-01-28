@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import dayjs from "dayjs";
 
 export const useReports = () => {
   const getReports = async () => {
@@ -9,7 +10,13 @@ export const useReports = () => {
       throw new Error("Missing VITE_SUPABASE_ANON_KEY env variable");
     }
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data, error } = await supabase.from("reports").select("*");
+    const { data, error } = await supabase.from("reports").select("*").gte(
+      "condition_date",
+      dayjs().toISOString(),
+    ).order(
+      "condition_date",
+      { ascending: true },
+    );
     if (error) throw error;
     return data;
   };
