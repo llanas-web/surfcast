@@ -1,14 +1,16 @@
-// deno-lint-ignore-file
+/// <reference lib="deno.ns" />
 import dayjs from "https://deno.land/x/deno_dayjs@v0.5.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import {
+  fetch,
+  Response,
+} from "https://esm.sh/v135/@supabase/node-fetch@2.6.15/denonext/node-fetch.mjs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-
-console.log(`§Let's go Surfing!`);
 
 const fetchAllosurf = async () => {
   const allosurfUrl = Deno.env.get("URL_ALLOSURF");
@@ -20,8 +22,7 @@ const fetchAllosurf = async () => {
     const dayIterator = json.jour[i];
     const dayDate = dayjs(dayIterator.date);
     // Iterate through dayIterator.heures object values
-    Object.values(dayIterator.heures).forEach((hourIterator) => {
-      // @ts-ignore
+    Object.values(dayIterator.heures).forEach((hourIterator: any) => {
       const hourDate = dayDate.hour(hourIterator.hour);
       mapResponse.set(hourDate.valueOf(), hourIterator);
     });
@@ -56,7 +57,7 @@ const upsertDatabase = async (data: any[]) => {
   const supabase = createClient(supabaseUrl, supabaseKey);
   const { data: reports, error } = await supabase
     .from("reports")
-    .upsert(data, { onConflict: "timestamp" });
+    .upsert(data, { onConflict: "condition_date" });
   if (error) throw error;
   return reports;
 };
@@ -69,52 +70,19 @@ const isSurfable = (
     !!allosurf?.s_wht && Number(allosurf.s_wht) >= 0.5;
 };
 
-const sendEmail = async (timestamp: number) => {
-  const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  if (!resendApiKey) throw new Error("Missing RESEND_API_KEY env variable");
-
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${Deno.env.get("RESEND_API_KEY")}`,
-    },
-    body: JSON.stringify({
-      from: "surfcast.llanas.dev <onboarding@resend.dev>",
-      to: ["b.maurence@gmail.com"],
-      subject: "Surf conditions REPORTS",
-      html: `Il y a des vagues prévu le <strong>${
-        dayjs(timestamp).format("DD/MM/YYYY h")
-      }</strong><br/> Let's go surfing!`,
-    }),
-  });
-};
-
-const sendSms = async (timestamp: number) => {
-  const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-  const authToken = Deno.env.get("TWILIO_AUTH_TOKEN");
-  const messageServiceId = Deno.env.get("TWILIO_MESSAGE_SERVICE_ID");
-  if (!accountSid) throw new Error("Missing TWILIO_ACCOUNT_SID env variable");
-  if (!authToken) throw new Error("Missing TWILIO_AUTH_TOKEN env variable");
-  if (!messageServiceId) {
-    throw new Error("Missing TWILIO_MESSAGE_SERVICE_ID env variable");
-  }
-  fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${btoa(`${accountSid}:${authToken}`)}`,
-      },
-      body: new URLSearchParams({
-        "To": "+33626356980",
-        "MessagingServiceSid": messageServiceId,
-        "Body": `Il y a des vagues prévu le ${
-          dayjs(timestamp).format("DD/MM/YYYY h")
-        }. Let's go surfing!`,
-      }),
-    },
-  );
+const storeCondition = async (conditions: any[]) => {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl) throw new Error("Missing SUPABASE_URL env variable");
+  if (!supabaseKey) throw new Error("Missing SUPABASE_KEY env variable");
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const { data: reports, error } = await supabase
+    .from("conditions")
+    .upsert(conditions, {
+      onConflict: "date",
+    });
+  if (error) throw error;
+  return reports;
 };
 
 Deno.serve(async (req) => {
@@ -123,25 +91,51 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // fetching data
+    // iterate through days
+    // -> iterate through hours
+    // -> if there is surf conditions, store them as day of condition
+    //
     const alloSurfResponse = await fetchAllosurf();
     const surflineResponse = await fetchSurfline();
     const responseArray: any[] = [];
+    const conditionsList = new Map<string, any[]>();
     for (const [key, value] of surflineResponse) {
       const alloSurfValue = alloSurfResponse.get(key);
       const _isSurfable = isSurfable(value, alloSurfValue);
-      if (_isSurfable) {
-        await sendEmail(key);
-        await sendSms(key);
-      }
       responseArray.push({
-        timestamp: key,
+        condition_date: dayjs(key).toISOString(),
+        modify_date: dayjs().toISOString(),
         is_surfable: _isSurfable,
         allosurf: alloSurfResponse.get(key),
         surfline: value,
       });
+      if (_isSurfable) {
+        const date = dayjs(key).format("YYYY-MM-DD");
+        if (!conditionsList.has(date)) {
+          conditionsList.set(date, [{ hour: key, condition: value.value }]);
+        } else {
+          const conditions = conditionsList.get(date) || [];
+          conditions.push({ hour: key, condition: value.value });
+          conditionsList.set(date, conditions);
+        }
+      }
     }
+    await storeCondition(
+      Array.from(conditionsList.entries()).map(([date, conditions]) => ({
+        date,
+        condition: conditions.map((item) =>
+          item.condition
+        ).reduce((m, n) => Math.max(m, n)) || 0,
+        metadata: conditions,
+      })),
+    );
     if (
-      Array.from(new Set(responseArray.map((item) => item.timestamp)))
+      Array.from(
+        new Set(responseArray.map((item) =>
+          item.condition_date
+        )),
+      )
         .length !== responseArray.length
     ) throw new Error("Duplicate timestamp");
     await upsertDatabase(responseArray);
