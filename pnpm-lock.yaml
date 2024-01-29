@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@canvasjs/charts':
+    specifier: ^3.7.36
+    version: 3.7.36
   '@supabase/supabase-js':
     specifier: ^2.39.3
     version: 2.39.3
@@ -128,6 +131,10 @@ packages:
       '@babel/helper-string-parser': 7.23.4
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+
+  /@canvasjs/charts@3.7.36:
+    resolution: {integrity: sha512-UFCbEm//nL9O2BZx5/6fFuybS/p9rtbDCHh/t2fmq+mjE34eci0qcsp1h8OhTLDScU8xmWNQWyKf5Fo5rH+ckQ==}
+    dev: false
 
   /@esbuild/aix-ppc64@0.19.11:
     resolution: {integrity: sha512-FnzU0LyE3ySQk7UntJO4+qIiQgI7KoODnZg5xzXIrFJlKd2P2gwHsHY4927xj9y5PJmJSzULiUCWmv7iWnNa7g==}

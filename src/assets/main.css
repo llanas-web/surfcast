@@ -1,3 +1,114 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html,
+body,
+#app {
+	margin: 0;
+	height: 100vh;
+	padding: 0
+}
+/* 
+.section-spacing>:not([hidden])~:not([hidden]) {
+	--tw-space-y-reverse: 0;
+	margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
+	margin-bottom: calc(3rem * var(--tw-space-y-reverse))
+}
+
+@media (min-width: 640px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(5rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(5rem * var(--tw-space-y-reverse))
+	}
+}
+
+@media (min-width: 768px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(6rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(6rem * var(--tw-space-y-reverse))
+	}
+}
+
+@media (min-width: 1024px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(8rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(8rem * var(--tw-space-y-reverse))
+	}
+}
+
+@media (min-width: 1280px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(9rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(9rem * var(--tw-space-y-reverse))
+	}
+}
+
+@media (min-width: 1536px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(11rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(11rem * var(--tw-space-y-reverse))
+	}
+}
+
+@media (min-width: 1850px) {
+	.section-spacing>:not([hidden])~:not([hidden]) {
+		--tw-space-y-reverse: 0;
+		margin-top: calc(13rem * calc(1 - var(--tw-space-y-reverse)));
+		margin-bottom: calc(13rem * var(--tw-space-y-reverse))
+	}
+}
+
+
+.section-padding-top {
+	padding-top: 3rem
+}
+
+@media (min-width: 640px) {
+	.section-padding-top {
+		padding-top: 5rem
+	}
+}
+
+@media (min-width: 768px) {
+	.section-padding-top {
+		padding-top: 6rem
+	}
+}
+
+@media (min-width: 1024px) {
+	.section-padding-top {
+		padding-top: 8rem
+	}
+}
+
+.section-padding-y {
+	padding-top: 3rem;
+	padding-bottom: 3rem
+}
+
+@media (min-width: 640px) {
+	.section-padding-y {
+		padding-top: 5rem;
+		padding-bottom: 5rem
+	}
+}
+
+@media (min-width: 768px) {
+	.section-padding-y {
+		padding-top: 6rem;
+		padding-bottom: 6rem
+	}
+}
+
+@media (min-width: 1024px) {
+	.section-padding-y {
+		padding-top: 8rem;
+		padding-bottom: 8rem
+	}
+} */
