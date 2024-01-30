@@ -3,7 +3,7 @@ import AppHeader from '@/components/app-header.vue';
 import AppHero from '@/components/app-hero.vue';
 import AppSurfForecast from '@/components/app-surf-forecast.vue';
 import AppSection from '@/components/app-section.vue';
-import AppOtherSection from './components/app-other-section.vue';
+import AppCallToAction from './components/app-call-to-action.vue';
 import AppFooter from '@/components/app-footer.vue';
 </script>
 
@@ -18,7 +18,7 @@ import AppFooter from '@/components/app-footer.vue';
       <AppHero />
       <AppSurfForecast />
       <AppSection />
-      <AppOtherSection />
+      <AppCallToAction />
       <AppFooter />
     </div>
   </div>

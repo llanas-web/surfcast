@@ -1,5 +1,23 @@
+interface WaveCondition {
+  height: number;
+  period: number;
+  direction?: string;
+}
+
+interface SwellCondition {
+  height: number;
+  period: number;
+  direction?: string;
+}
+
+interface WindCondition {
+  speed: number;
+  direction: string;
+  peak?: number;
+}
+
 interface ConditionModel {
-  date: Date;
+  date: string;
   wave: WaveCondition;
   swell: SwellCondition;
   wind: WindCondition;
@@ -8,22 +26,15 @@ interface ConditionModel {
   rating?: number;
 }
 
-type WaveCondition = {
-  height: number;
-  period: number;
-  direction?: string;
-};
+interface ConditionDay {
+  date: string;
+  conditions: ConditionModel[];
+}
 
-type SwellCondition = {
-  height: number;
-  period: number;
-  direction?: string;
+export type {
+  ConditionDay,
+  ConditionModel,
+  SwellCondition,
+  WaveCondition,
+  WindCondition,
 };
-
-type WindCondition = {
-  speed: number;
-  direction: string;
-  peak?: number;
-};
-
-export type { ConditionModel, SwellCondition, WaveCondition, WindCondition };
