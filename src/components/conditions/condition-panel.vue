@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto">
+  <div class="mx-auto px-16">
     <h2 class="ml-16 text-2xl font-bold mb-4">{{ conditionDay.date }}</h2>
     <div class="h-52 relative">
       <div ref="conditionCanvasContainer" class="absolute h-full w-full z-0">

@@ -10,7 +10,7 @@ export const useReportsStore = defineStore("reports", () => {
 
   const retrieveReports = async () => {
     reports.value = await reportService.getCondition(
-      dayJs().set("hour", 0).toDate(),
+      dayJs().toDate(),
     );
   };
 

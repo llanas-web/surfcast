@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex-1 h-full [&>*]:rounded-xl hidden">
+  <div class="relative flex-1 h-full [&>*]:rounded-xl hidden text-gray-500">
     <div class="absolute h-full w-full z-0"></div>
     <div class="absolute p-2 z-10">
       <div class="font-bold mb-2 text-center">
