@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto px-16">
-    <h2 class="ml-16 text-2xl font-bold mb-4">{{ conditionDay.date }}</h2>
+    <h2 class="ml-16 text-2xl font-bold mb-4">{{ dayjs(conditionDay.date).format('dddd D') }}</h2>
     <div class="h-52 relative">
       <div ref="conditionCanvasContainer" class="absolute h-full w-full z-0">
         <ConditionCanvas
@@ -10,8 +10,9 @@
         />
       </div>
       <div
-        class="absolute p-4 h-full w-full flex justify-center items-center gap-2 [&>*:nth-child(6n+1)]:block sm:[&>*:nth-child(4n+1)]:block md:[&>*:nth-child(3n+1)]:block lg:[&>*:nth-child(2n+1)]:block 2xl:[&>*]:block"
+        class="absolute h-full w-full flex justify-center items-center gap-2 [&>*:nth-child(6n+1)]:block sm:[&>*:nth-child(4n+1)]:block md:[&>*:nth-child(3n+1)]:block lg:[&>*:nth-child(2n+1)]:block 2xl:[&>*]:block"
       >
+        
         <ConditionColumn
           v-for="condition in conditionDay.conditions"
           :key="condition.date"
@@ -27,6 +28,12 @@ import type { ConditionDay } from '@/model/condition.model';
 import ConditionCanvas from '@/components/conditions/condition-canvas.vue';
 import ConditionColumn from '@/components/conditions/condition-column.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
+import dayjs from 'dayjs';
+import localizedPlugin from 'dayjs/plugin/localizedFormat';
+import 'dayjs/locale/fr';
+
+dayjs.locale('fr');
+dayjs.extend(localizedPlugin);
 
 const { conditionDay } = defineProps<{ conditionDay: ConditionDay }>();
 

@@ -1,6 +1,5 @@
 <template>
-  <svg ref="svgElement" class="rounded-2xl"></svg>
-  <canvas ref="canvasElement"></canvas>
+  <svg ref="svgElement"></svg>
 </template>
 
 <script setup lang="ts">
@@ -14,8 +13,9 @@ const props = defineProps({
   height: { type: Number, default: 0 },
 });
 
+const transparentScale = 0.3;
+
 const { conditions, width, height } = toRefs(props);
-const context: Ref<CanvasRenderingContext2D | undefined> = ref();
 const svgElement: Ref<HTMLOrSVGElement | undefined> = ref();
 
 const render = () => {
@@ -74,17 +74,17 @@ const render = () => {
 
   svg
     .append('path')
-    .attr('fill', 'rgba(34, 211, 238, 0.5)')
+    .attr('fill', `rgba(34, 211, 238, ${transparentScale})`)
     .attr('d', waveAreaGenerator(listWaveHeight));
 
   svg
     .append('path')
-    .attr('fill', 'rgba(14, 165, 233, 0.5)')
+    .attr('fill', `rgba(14, 165, 233, ${transparentScale})`)
     .attr('d', swellAreaGenerator(listSwellHeight));
 
   svg
     .append('path')
-    .attr('fill', 'rgba(94, 234, 212, 0.5)')
+    .attr('fill', `rgba(94, 234, 212, ${transparentScale})`)
     .attr('d', windAreaGenerator(listWindSpeed));
 };
 
