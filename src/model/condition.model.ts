@@ -17,7 +17,7 @@ interface WindCondition {
 }
 
 interface ConditionModel {
-  date: string;
+  date: Date;
   wave: WaveCondition;
   swell: SwellCondition;
   wind: WindCondition;

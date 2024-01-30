@@ -1,6 +1,8 @@
 <template>
   <div class="mx-auto px-16">
-    <h2 class="ml-16 text-2xl font-bold mb-4">{{ dayjs(conditionDay.date).format('dddd D') }}</h2>
+    <h2 class="ml-16 text-3xl font-black tracking-tight text-cyan-700 sm:text-4xl mb-4 capitalize">
+      {{ formatedDate }}
+    </h2>
     <div class="h-52 relative">
       <div ref="conditionCanvasContainer" class="absolute h-full w-full z-0">
         <ConditionCanvas
@@ -10,12 +12,12 @@
         />
       </div>
       <div
-        class="absolute h-full w-full flex justify-center items-center gap-2 [&>*:nth-child(6n+1)]:block sm:[&>*:nth-child(4n+1)]:block md:[&>*:nth-child(3n+1)]:block lg:[&>*:nth-child(2n+1)]:block 2xl:[&>*]:block"
+        class="absolute h-full w-full flex justify-center items-center gap-2 [&>*:nth-child(7n+1)]:block sm:[&>*:nth-child(6n)]:block md:[&>*:nth-child(6n)]:block lg:[&>*:nth-child(4n)]:block 2xl:[&>*:nth-child(2n)]:block"
       >
-        
+        <ConditionInfoColumn />
         <ConditionColumn
           v-for="condition in conditionDay.conditions"
-          :key="condition.date"
+          :key="condition.date.toISOString()"
           :condition="condition"
         />
       </div>
@@ -27,7 +29,8 @@
 import type { ConditionDay } from '@/model/condition.model';
 import ConditionCanvas from '@/components/conditions/condition-canvas.vue';
 import ConditionColumn from '@/components/conditions/condition-column.vue';
-import { onMounted, onUnmounted, ref } from 'vue';
+import ConditionInfoColumn from '@/components/conditions/condition-info-column.vue';
+import { onMounted, onUnmounted, ref, computed } from 'vue';
 import dayjs from 'dayjs';
 import localizedPlugin from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/fr';
@@ -40,6 +43,16 @@ const { conditionDay } = defineProps<{ conditionDay: ConditionDay }>();
 const conditionCanvasContainer = ref<HTMLDivElement | undefined>();
 const canvasWidth = ref(0);
 const canvasHeight = ref(0);
+
+const formatedDate = computed(() => {
+  const day = dayjs(conditionDay.date);
+
+  if (day.get('D') === 1) {
+    return day.format('dddd D MMM');
+  } else {
+    return day.format('ddd D');
+  }
+});
 
 const resize = () => {
   if (!conditionCanvasContainer.value) return;

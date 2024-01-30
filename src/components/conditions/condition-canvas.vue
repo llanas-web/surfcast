@@ -1,5 +1,5 @@
 <template>
-  <svg ref="svgElement"></svg>
+  <svg ref="svgElement" class="rounded-xl"></svg>
 </template>
 
 <script setup lang="ts">
@@ -84,7 +84,7 @@ const render = () => {
 
   svg
     .append('path')
-    .attr('fill', `rgba(94, 234, 212, ${transparentScale})`)
+    .attr('fill', `rgba(252, 165, 165, ${transparentScale})`)
     .attr('d', windAreaGenerator(listWindSpeed));
 };
 

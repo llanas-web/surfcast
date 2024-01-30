@@ -4,6 +4,7 @@
       v-for="conditionDay in conditionPerDay"
       :key="conditionDay.date"
       :condition-day="conditionDay"
+      class="mb-8"
     />
   </section>
 </template>
