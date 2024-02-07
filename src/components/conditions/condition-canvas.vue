@@ -6,14 +6,13 @@
 import { onMounted, ref, defineProps, toRefs, watch, type Ref } from 'vue';
 import { select, scaleLinear, curveCatmullRom, area } from 'd3';
 import type { ConditionModel } from '@/model/condition.model';
+import { TRANSPARENT_SCALE } from '@/utils/common';
 
 const props = defineProps({
   conditions: { type: Array<ConditionModel>, default: [] },
   width: { type: Number, default: 0 },
   height: { type: Number, default: 0 },
 });
-
-const transparentScale = 0.3;
 
 const { conditions, width, height } = toRefs(props);
 const svgElement: Ref<HTMLOrSVGElement | undefined> = ref();
@@ -74,18 +73,22 @@ const render = () => {
 
   svg
     .append('path')
-    .attr('fill', `rgba(34, 211, 238, ${transparentScale})`)
+    .attr('fill', `rgba(34, 211, 238, ${TRANSPARENT_SCALE})`) // cyan-300
     .attr('d', waveAreaGenerator(listWaveHeight));
 
   svg
     .append('path')
-    .attr('fill', `rgba(14, 165, 233, ${transparentScale})`)
+    .attr('fill', `rgba(14, 165, 233, ${TRANSPARENT_SCALE})`) // sky-500
     .attr('d', swellAreaGenerator(listSwellHeight));
 
   svg
     .append('path')
-    .attr('fill', `rgba(252, 165, 165, ${transparentScale})`)
+    .attr('fill', `rgba(252, 165, 165, ${TRANSPARENT_SCALE})`) // red-300
     .attr('d', windAreaGenerator(listWindSpeed));
+
+    svg
+    .append('linearGradient')
+    .attr('')
 };
 
 watch(width, render);

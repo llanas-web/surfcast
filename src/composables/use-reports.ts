@@ -12,6 +12,7 @@ export const useReportsStore = defineStore("reports", () => {
     reports.value = await reportService.getCondition(
       dayJs().toDate(),
     );
+    console.log(reports.value.map((report) => report.wind.direction));
   };
 
   return {

@@ -8,6 +8,9 @@ dependencies:
   '@canvasjs/charts':
     specifier: ^3.7.36
     version: 3.7.36
+  '@heroicons/vue':
+    specifier: ^2.1.1
+    version: 2.1.1(vue@3.4.15)
   '@supabase/supabase-js':
     specifier: ^2.39.3
     version: 2.39.3
@@ -391,6 +394,14 @@ packages:
     resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
+
+  /@heroicons/vue@2.1.1(vue@3.4.15):
+    resolution: {integrity: sha512-Yi5nh/89L193ALgHyJUQUdNLsKXPrrE3yj5yiR8WAlo7nZyXGxGauQcEAmBsa2XJGMhBMuEdoOiuZ8wEwTBxVQ==}
+    peerDependencies:
+      vue: '>= 3'
+    dependencies:
+      vue: 3.4.15(typescript@5.3.3)
+    dev: false
 
   /@humanwhocodes/config-array@0.11.14:
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
